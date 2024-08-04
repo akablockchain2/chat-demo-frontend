@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-demo-frontend-dep
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: chat-demo-frontend-dep
+  template:
+    metadata:
+      labels:
+        app: chat-demo-frontend-dep
+    spec:
+      containers:
+        - name: chat-demo-frontend
+          image: ghcr.io/akablockchain2/chat-demo-frontend:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_URL
+              value: "http://ad3bf0d7511a845e992a01fb2f4a933f-1729347672.us-east-1.elb.amazonaws.com:80"

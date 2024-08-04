@@ -1,0 +1,59 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PAT }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        env:
+          API_URL: http://ad3bf0d7511a845e992a01fb2f4a933f-1729347672.us-east-1.elb.amazonaws.com:80
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/chat-demo-frontend:latest
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::272405777365:role/eks-cluster-demo
+          aws-region: us-east-1
+
+      - name: Setup kubeconfig
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name demo
+
+      - name: Check current Kubernetes context
+        run: |
+          kubectl config current-context
+
+      - name: Get Kubernetes Services
+        run: |
+          kubectl get svc
+#
+#      - name: Deploy to Kubernetes
+#        run: |
+#          kubectl delete -f k8s/k8s-deployment.yaml
+#          kubectl apply -f k8s/k8s-deployment.yaml
+#          kubectl apply -f k8s/k8s-service.yaml

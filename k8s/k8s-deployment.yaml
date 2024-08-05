@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: chat-demo-frontend-dep
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: chat-demo-frontend-dep
@@ -19,4 +19,4 @@ spec:
             - containerPort: 80
           env:
             - name: API_URL
-              value: "http://http://172.20.6.145:30007"
+              value: "http://aebf4c1d40ead4780871c643f6bf14b8-700165815.us-east-1.elb.amazonaws.com:80"

@@ -8,5 +8,5 @@ spec:
     app: chat-demo-frontend-dep
   ports:
     - protocol: TCP
-      port: 88
+      port: 80
       targetPort: 80
